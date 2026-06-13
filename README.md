@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ZvA GAME — Web Edition (Tugas 12 Cloud Computing)
 
 Game turn-based **Zhongli vs Azhdaha** (versi web dari game terminal Go-ku).
@@ -53,3 +54,6 @@ go run .
 - **`os.Getenv("PORT")`:** port ditentukan PaaS, bukan di-hardcode.
 - **Trade-off free tier:** service tidur kalau idle, request pertama ~1 menit
   buat bangun (spin-up). Wajar buat demo.
+=======
+# First-RNG-Project-LMAO
+>>>>>>> 72d869d62660591d147f223b8471cb291358cbed
