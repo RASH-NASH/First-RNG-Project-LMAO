@@ -1,9 +1,6 @@
 // ZvA GAME (web edition) - Tugas 12 Cloud Computing
 // Server Go yang menjalankan logika battle asli (Zhongli vs Azhdaha)
 // dan menyajikannya sebagai web app yang siap deploy di PaaS (Render).
-//
-// Dibuat oleh: RASHAQA NASHWAN MOYA - 103012300058 - IF_47_11
-// Logika battle = port langsung dari versi terminal ZvA.go
 
 package main
 
@@ -241,7 +238,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-// itoa kecil biar nggak import strconv di banyak tempat
+// itoa biar nggak perlu import strconv di banyak tempat
 func itoa(n int) string {
 	if n == 0 {
 		return "0"
