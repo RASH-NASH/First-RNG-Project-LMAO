@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZvA — Zhongli vs Azhdaha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone:#14110d;
+    --panel:#1f1a12;
+    --panel-edge:#3a3122;
+    --gold:#d8b66a;
+    --gold-bright:#f3d68f;
+    --amber:#e0a126;
+    --crimson:#c3514a;
+    --crimson-deep:#7a2b27;
+    --cream:#ece1cc;
+    --muted:#9a8c6f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Spectral',Georgia,serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2a2114 0%, transparent 60%),
+      var(--stone);
+    color:var(--cream);
+    min-height:100vh;
+    padding:18px;
+    display:flex;justify-content:center;
+  }
+  .wrap{width:100%;max-width:760px}
+
+  /* ---- Title ---- */
+  .title{text-align:center;margin-bottom:18px}
+  .title .glyphs{font-family:'Cinzel';color:var(--gold);font-size:13px;letter-spacing:.5em;opacity:.8}
+  .title h1{
+    font-family:'Cinzel';font-weight:900;font-size:clamp(30px,8vw,52px);
+    color:var(--gold-bright);letter-spacing:.04em;line-height:1;
+    text-shadow:0 2px 0 #000, 0 0 24px rgba(224,161,38,.25);
+  }
+  .title p{color:var(--muted);font-style:italic;margin-top:6px;font-size:14px}
+
+  /* ---- Combatant panels ---- */
+  .fighter{
+    background:linear-gradient(180deg,var(--panel),#191409);
+    border:1px solid var(--panel-edge);
+    border-radius:10px;padding:14px 16px;margin-bottom:12px;
+    position:relative;
+  }
+  .fighter::before{
+    content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;
+    box-shadow:inset 0 0 0 1px rgba(216,182,106,.12);
+  }
+  .frow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .fname{font-family:'Cinzel';font-weight:700;font-size:20px}
+  .azhdaha .fname{color:var(--crimson)}
+  .zhongli .fname{color:var(--gold)}
+  .felement{font-size:12px;color:var(--muted);font-style:italic}
+  .hpval{font-family:'Cinzel';font-size:14px;color:var(--cream)}
+  .bar{height:14px;border-radius:7px;background:#0c0a06;overflow:hidden;border:1px solid #000}
+  .fill{height:100%;width:100%;transition:width .45s ease}
+  .azhdaha .fill{background:linear-gradient(90deg,var(--crimson-deep),var(--crimson))}
+  .zhongli .fill{background:linear-gradient(90deg,#9a7322,var(--amber),var(--gold-bright))}
+
+  /* ---- Battle log (signature: unfurled scroll) ---- */
+  .log{
+    background:#100d08;
+    border:1px solid var(--panel-edge);
+    border-radius:10px;
+    height:230px;overflow-y:auto;
+    padding:14px 16px;margin:12px 0;
+    font-size:14.5px;line-height:1.55;
+    scroll-behavior:smooth;
+  }
+  .log::-webkit-scrollbar{width:8px}
+  .log::-webkit-scrollbar-thumb{background:var(--panel-edge);border-radius:4px}
+  .log .line{padding:1px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+  .log .z{color:var(--gold)}
+  .log .a{color:var(--crimson)}
+  .log .crit{color:var(--gold-bright);font-weight:600}
+  .log .sys{color:var(--muted);font-style:italic}
+  .log .turn{font-family:'Cinzel';color:var(--muted);font-size:11px;letter-spacing:.2em;margin:10px 0 2px;text-transform:uppercase}
+
+  /* ---- Skills ---- */
+  .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .skill{
+    background:linear-gradient(180deg,#2a2114,#1a140b);
+    border:1px solid var(--panel-edge);
+    border-radius:9px;color:var(--cream);
+    padding:12px 8px;cursor:pointer;text-align:center;
+    transition:transform .08s, border-color .2s, box-shadow .2s;
+    font-family:inherit;
+  }
+  .skill:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 18px rgba(216,182,106,.18)}
+  .skill:active:not(:disabled){transform:translateY(1px) scale(.99)}
+  .skill:disabled{opacity:.35;cursor:not-allowed}
+  .skill .k{font-family:'Cinzel';font-weight:700;color:var(--gold);font-size:13px;letter-spacing:.08em}
+  .skill .d{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+
+  /* ---- Start / end overlay ---- */
+  .overlay{
+    background:linear-gradient(180deg,var(--panel),#140f07);
+    border:1px solid var(--panel-edge);border-radius:12px;
+    padding:26px 22px;text-align:center;
+  }
+  .overlay .speaker{font-family:'Cinzel';color:var(--gold);font-weight:700;letter-spacing:.05em;margin-bottom:14px}
+  .overlay .dlg{color:var(--cream);font-style:italic;line-height:1.7;font-size:15.5px;max-width:46ch;margin:0 auto 8px}
+  .overlay .dlg.dim{color:var(--muted)}
+  .btn{
+    margin-top:18px;background:linear-gradient(180deg,var(--amber),#b3801c);
+    color:#1a1206;border:none;border-radius:9px;
+    font-family:'Cinzel';font-weight:700;letter-spacing:.05em;
+    padding:13px 30px;font-size:15px;cursor:pointer;
+    box-shadow:0 6px 18px rgba(224,161,38,.2);transition:transform .08s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .result{font-family:'Cinzel';font-weight:900;font-size:34px;margin-bottom:10px}
+  .result.win{color:var(--gold-bright)}
+  .result.lose{color:var(--crimson)}
+
+  .credit{text-align:center;color:var(--muted);font-size:11.5px;margin-top:16px;letter-spacing:.05em}
+  .hidden{display:none}
+
+  @media (max-width:420px){
+    .skill .d{display:none}
+    .skill{padding:14px 6px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fill,.skill{transition:none}
+    .log{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="title">
+    <div class="glyphs">岩 · 契 · 王</div>
+    <h1>ZvA</h1>
+    <p>Zhongli vs Azhdaha — a turn-based duel of Liyue</p>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start" class="overlay">
+    <div class="speaker">ZHONGLI</div>
+    <p class="dlg">"Hello, Traveler. I am Zhongli — a god of contract. People called me Morax, or the God of Geo."</p>
+    <p class="dlg dim">The earth begins to rumble. It has been eons since the last quake... Azhdaha rages once more beneath this land.</p>
+    <p class="dlg">"Hurry, Traveler. Fight with me."</p>
+    <button class="btn" id="startBtn">Begin the Duel</button>
+  </div>
+
+  <!-- BATTLE SCREEN -->
+  <div id="battle" class="hidden">
+    <div class="fighter azhdaha">
+      <div class="frow"><span class="fname">AZHDAHA</span><span class="felement">Elemental Dragon</span></div>
+      <div class="frow"><span class="hpval" id="ahpTxt"></span></div>
+      <div class="bar"><div class="fill" id="ahpFill"></div></div>
+    </div>
+
+    <div class="fighter zhongli">
+      <div class="frow"><span class="fname">ZHONGLI</span><span class="felement">Geo Archon</span></div>
+      <div class="frow"><span class="hpval" id="zhpTxt"></span></div>
+      <div class="bar"><div class="fill" id="zhpFill"></div></div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <div class="skills">
+      <button class="skill" data-skill="1">
+        <div class="k">SPEAR RUSH</div><div class="d">Basic ATK · high dmg, can crit</div>
+      </button>
+      <button class="skill" data-skill="2">
+        <div class="k">DOMINUS SHIELD</div><div class="d">Heal + Shield</div>
+      </button>
+      <button class="skill" data-skill="3">
+        <div class="k">ORDER!!</div><div class="d">Chance for Ultimate</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div id="end" class="overlay hidden">
+    <div class="result" id="resultTxt"></div>
+    <p class="dlg dim">"Any review, critique, or suggestion is meaningful to me. Thank you for playing."</p>
+    <button class="btn" id="againBtn">Duel Again</button>
+  </div>
+
+  <div class="credit">ZvA GAME · RASHAQA NASHWAN MOYA · 103012300058 · IF_47_11 · Deployed on PaaS</div>
+</div>
+
+<script>
+  const Z_MAX = 8000, A_MAX = 15000;
+  let state = { zhp:Z_MAX, ahp:A_MAX, energy:0 };
+  let turn = 0;
+  let busy = false;
+
+  const $ = id => document.getElementById(id);
+  const logBox = $('log');
+
+  function render(){
+    const zPct = Math.max(0, state.zhp / Z_MAX * 100);
+    const aPct = Math.max(0, state.ahp / A_MAX * 100);
+    $('zhpFill').style.width = zPct + '%';
+    $('ahpFill').style.width = aPct + '%';
+    $('zhpTxt').textContent = Math.max(0, state.zhp) + ' HP';
+    $('ahpTxt').textContent = Math.max(0, state.ahp) + ' HP';
+  }
+
+  function classify(line){
+    if(line.includes('CRIT') || line.includes('PASSIVE') || line.includes('COUNTER')) return 'crit';
+    if(line.startsWith('AZHDAHA') || line.includes('GEO') || line.includes('CRYO')
+       || line.includes('PYRO') || line.includes('HYDRO') || line.includes('ELECTRO')) return 'a';
+    if(line.startsWith('SPEAR') || line.startsWith('DOMINUS') || line.includes('ORDER')
+       || line.includes('PLANET') || line.includes('DOMINANCE') || line.startsWith('ZHONGLI')) return 'z';
+    return 'sys';
+  }
+
+  function addLog(line){
+    const d = document.createElement('div');
+    d.className = 'line ' + classify(line);
+    d.textContent = line;
+    logBox.appendChild(d);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  function addTurnHeader(){
+    turn++;
+    const h = document.createElement('div');
+    h.className = 'turn';
+    h.textContent = '— Turn ' + turn + ' —';
+    logBox.appendChild(h);
+  }
+
+  function setSkills(disabled){
+    document.querySelectorAll('.skill').forEach(b => b.disabled = disabled);
+  }
+
+  async function doTurn(skill){
+    if(busy) return;
+    busy = true; setSkills(true);
+    addTurnHeader();
+    try{
+      const res = await fetch('/api/turn', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ state, action: skill })
+      });
+      const data = await res.json();
+      state = data.state;
+      data.log.forEach(addLog);
+      render();
+
+      if(data.status === 'win'){ endGame(true); return; }
+      if(data.status === 'lose'){ endGame(false); return; }
+    }catch(e){
+      addLog('⚠ Connection error — the link to the server was lost. Try again.');
+    }
+    busy = false; setSkills(false);
+  }
+
+  function endGame(win){
+    setTimeout(() => {
+      $('battle').classList.add('hidden');
+      const r = $('resultTxt');
+      r.textContent = win ? 'ZHONGLI WINS' : 'AZHDAHA WINS';
+      r.className = 'result ' + (win ? 'win' : 'lose');
+      $('end').classList.remove('hidden');
+    }, 700);
+  }
+
+  function startGame(){
+    state = { zhp:Z_MAX, ahp:A_MAX, energy:0 };
+    turn = 0; busy = false;
+    logBox.innerHTML = '';
+    $('start').classList.add('hidden');
+    $('end').classList.add('hidden');
+    $('battle').classList.remove('hidden');
+    addLog('AZHDAHA: It is time, Morax... we settle this down!');
+    render();
+    setSkills(false);
+  }
+
+  $('startBtn').addEventListener('click', startGame);
+  $('againBtn').addEventListener('click', startGame);
+  document.querySelectorAll('.skill').forEach(btn => {
+    btn.addEventListener('click', () => doTurn(btn.dataset.skill));
+  });
+</script>
+</body>
+</html>
